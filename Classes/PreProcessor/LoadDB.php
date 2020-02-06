@@ -244,6 +244,12 @@ class LoadDB extends AbstractPreProcessor
         if (!isset($conf['pidInList']) || strlen($conf['pidInList']) === 0) {
             $queryParts['WHERE'] = preg_replace('/([^ ]+\.('.$quotes.')pid('.$quotes.') IN \([^ ]+\) AND )/i', '', $queryParts['WHERE']);
         }
+
+        // workaround for missing join condition in query parts array
+        if ($conf['join'] && strpos('join', $queryParts['FROM']) === false) {
+            $queryParts['FROM'] = sprintf("%s JOIN %s", $queryParts['FROM'], $conf['join']);
+        }
+
         return $GLOBALS['TYPO3_DB']->exec_SELECT_queryArray($queryParts);
     }
 }
